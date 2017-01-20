@@ -8,6 +8,7 @@ Plug 'jistr/vim-nerdtree-tabs'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'tmhedberg/matchit'
 Plug 'derekwyatt/vim-fswitch'
+Plug 'itchyny/vim-haskell-indent'
 call plug#end()
 
 " SETTINGS.
@@ -37,6 +38,8 @@ set wildmode=longest,list
 " Save/load views automagically (not for non-existent files).
 autocmd BufWinLeave * if expand("%") != "" | mkview | endif
 autocmd BufWinEnter * if expand("%") != "" | silent loadview | endif
+" Skip loading the vim defaults.
+let g:skip_defaults_vim = 1
 " --=== Status line ===--
 set statusline=
 set statusline+=%F " Relative filename.
