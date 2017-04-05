@@ -27,7 +27,6 @@
  ;; font-lock
  '(font-lock-builtin-face ((t (:foreground "#dd7b3b"))))
  '(font-lock-builtin-face ((t (:foreground "#dd7b3b"))))
- ;'(font-lock-comment-face ((t (:foreground "#666" ))))
  '(font-lock-comment-face ((t (:foreground "#3387cc" ))))
  '(font-lock-constant-face ((t (:foreground "#99cf50"))))
  '(font-lock-doc-string-face ((t (:foreground "#9b859d"))))
