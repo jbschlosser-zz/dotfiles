@@ -6,9 +6,13 @@
   ("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+    (cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil :config (evil-mode 1))
@@ -41,7 +45,6 @@
   (add-hook 'haskell-mode-hook
 	    (lambda () (interactive)
 	      (define-key evil-motion-state-map "gd" 'intero-goto-definition))))
-(use-package color)
 
 ; === VISUALS ===
 ; Load theme.
@@ -191,15 +194,26 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ; Don't auto-insert a final newline.
 (setq require-final-newline nil)
 ; Set some custom stuff.
-(let ((bg (face-attribute 'default :background)))
-  (custom-set-faces
-   '(dired-directory ((t (:inherit font-lock-comment-face))))
-   `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 10)))))
-   `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-   `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-   `(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
-   `(company-tooltip-common ((t (:inherit font-lock-comment-face))))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-scrollbar-bg ((t (:background "#292929"))))
+ '(company-scrollbar-fg ((t (:background "#1c1c1c"))))
+ '(company-tooltip ((t (:inherit default :background "#292929"))))
+ '(company-tooltip-common ((t (:inherit font-lock-comment-face))))
+ '(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
+ '(dired-directory ((t (:inherit font-lock-comment-face)))))
 ; Only syntax check on save for Flycheck.
 (setq flycheck-check-syntax-automatically '(save))
-
+; Tweak auto-mode alist.
+(defun append-to-list (list-var elements)
+  "Append ELEMENTS to the end of LIST-VAR.
+The return value is the new value of LIST-VAR."
+  (set list-var (append (symbol-value list-var) elements)))
+(append-to-list 'auto-mode-alist
+		'(("\\.bash_aliases" . sh-mode)))
+; Start the server.
+(server-start)
 (message "Finished loading init.el")
