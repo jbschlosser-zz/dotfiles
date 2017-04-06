@@ -6,17 +6,12 @@
   ("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package ac-haskell-process haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+    (helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil :config (evil-mode 1))
-  ;(evil-select-search-module 'evil-search-module 'isearch))
 (use-package evil-terminal-cursor-changer :if (not window-system)
   :config (evil-terminal-cursor-changer-activate))
 (use-package evil-search-highlight-persist
@@ -26,31 +21,27 @@
   :config (ido-mode 1))
 (use-package undo-tree :config (global-undo-tree-mode))
 (use-package key-chord :config (key-chord-mode 1))
-(use-package ac-haskell-process
-  :config
-  (add-hook 'interactive-haskell-mode-hook 'ac-haskell-process-setup)
-  (add-hook 'haskell-interactive-mode-hook 'ac-haskell-process-setup)
-  (eval-after-load "auto-complete"
-    '(add-to-list 'ac-modes 'haskell-interactive-mode)))
+(use-package company :config (add-hook 'after-init-hook 'global-company-mode))
 (use-package all-the-icons)
 (use-package magit :bind (("M-g" . magit-status))
   :config
   (setq magit-display-buffer-function
 	(lambda (buffer)
 	  (display-buffer buffer '(display-buffer-same-window)))))
+(use-package haskell-mode
+  :config
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+  (add-hook 'haskell-mode-hook 'turn-on-haskell-indentation))
 (use-package intero
-  :config (add-hook 'haskell-mode-hook 'intero-mode)
+  :config
+  (defun intero-type-insert ()
+    (interactive)
+    (intero-type-at t))
+  (add-hook 'haskell-mode-hook 'intero-mode)
   (add-hook 'haskell-mode-hook
 	    (lambda () (interactive)
-	      (define-key evil-motion-state-map "gd" 'intero-goto-definition)))
-  :bind (("M-h" . nil)
-	 ("M-h d" . intero-goto-definition)
-	 ("M-h i" . intero-info)
-	 ("M-h t" . intero-type-at)
-	 ("M-h l" . intero-repl-load)
-	 ("M-h s" . intero-apply-suggestions)
-	 ("M-h c" . intero-repl-clear-buffer)
-	 ("M-h r" . intero-repl)))
+	      (define-key evil-motion-state-map "gd" 'intero-goto-definition))))
+(use-package color)
 
 ; === VISUALS ===
 ; Load theme.
@@ -75,9 +66,9 @@
 (set-face-attribute 'default t :font my-default-font)
 (set-face-attribute 'default nil :font my-default-font)
 (set-frame-font my-default-font nil t)
-; Mode-based cursor box colors.
+; Mode-based cursor box colors (DISABLED FOR NOW DUE TO INTERO BUG).
 (setq evil-normal-state-cursor '(box "orange"))
-(setq evil-insert-state-cursor '(box "yellow"))
+(setq evil-insert-state-cursor '(box "orange"))
 ; Show matching parens.
 (setq show-paren-delay 0)
 (show-paren-mode 1)
@@ -85,6 +76,13 @@
 (set-face-background 'show-paren-match "white")
 (set-face-foreground 'show-paren-match "black")
 (set-face-attribute 'show-paren-match nil :weight 'bold)
+; Change mode-line color by evil state.
+(add-hook 'post-command-hook
+	  (lambda ()
+	    (let ((color (cond ((evil-insert-state-p) '("#f45942" . "#ffffff"))
+			       (t '("#024e8c" . "#ffffff")))))
+	      (set-face-background 'mode-line (car color))
+	      (set-face-foreground 'mode-line (cdr color)))))
 
 ; === BINDINGS ===
 ; Window movement.
@@ -98,6 +96,7 @@
 (global-set-key "\M-q" 'kill-this-buffer)
 (global-set-key "\M-Q" 'delete-window)
 (global-set-key "\M-b" 'buffer-menu)
+(global-set-key "\M-d" 'ido-dired)
 ; Evaluation.
 (global-set-key "\M-e" nil)
 (global-set-key (kbd "M-e b") 'eval-buffer)
@@ -153,6 +152,25 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
+; Proper tab complete.
+(defun complete-or-indent ()
+  (interactive)
+  (if (company-manual-begin)
+      (company-complete)
+    (indent-according-to-mode)))
+(define-key evil-insert-state-map [tab] 'complete-or-indent)
+(define-key evil-normal-state-map [tab] 'indent-according-to-mode)
+; Haskell bindings.
+(define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --fast")))
+(define-key haskell-mode-map [f12] 'intero-devel-reload)
+(define-key haskell-mode-map (kbd "M-h") nil)
+(define-key haskell-mode-map (kbd "M-h i") 'intero-info)
+(define-key haskell-mode-map (kbd "M-h t") 'intero-type-at)
+(define-key haskell-mode-map (kbd "M-h y") 'intero-type-insert)
+(define-key haskell-mode-map (kbd "M-h l") 'intero-repl-load)
+(define-key haskell-mode-map (kbd "M-h s") 'intero-apply-suggestions)
+(define-key haskell-mode-map (kbd "M-h c") 'intero-repl-clear-buffer)
+(define-key haskell-mode-map (kbd "M-h r") 'intero-repl)
 
 ; === MISC ===
 ; Set middle-click to paste at cursor position instead of mouse position.
@@ -170,17 +188,18 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
-; Enable autocomplete.
-(setq tab-always-indent 'complete)
-(add-to-list 'completion-styles 'initials t)
 ; Don't auto-insert a final newline.
 (setq require-final-newline nil)
 ; Set some custom stuff.
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(let ((bg (face-attribute 'default :background)))
+  (custom-set-faces
+   '(dired-directory ((t (:inherit font-lock-comment-face))))
+   `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 10)))))
+   `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+   `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+   `(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
+   `(company-tooltip-common ((t (:inherit font-lock-comment-face))))))
+; Only syntax check on save for Flycheck.
+(setq flycheck-check-syntax-automatically '(save))
 
 (message "Finished loading init.el")

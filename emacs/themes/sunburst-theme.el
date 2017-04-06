@@ -35,7 +35,7 @@
  '(font-lock-reference-face ((t (:foreground "#8b98ab"))))
  '(font-lock-string-face ((t (:foreground "#65b042"))))
  '(font-lock-type-face ((t (:foreground "#c5af75"))))
- '(font-lock-variable-name-face ((t (:foreground "#3387cc"))))
+ '(font-lock-variable-name-face ((t (:foreground "#ffffff"))))
  '(font-lock-warning-face ((t (:bold t :background "#420e09" :foreground "#eeeeee"))))
 
  ;; erc
