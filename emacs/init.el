@@ -5,10 +5,19 @@
   ("melpa" . "http://melpa.org/packages/")
   ("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package ac-haskell-process haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+(require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil :config (evil-mode 1))
   ;(evil-select-search-module 'evil-search-module 'isearch))
-(use-package evil-terminal-cursor-changer :if window-system
+(use-package evil-terminal-cursor-changer :if (not window-system)
   :config (evil-terminal-cursor-changer-activate))
 (use-package evil-search-highlight-persist
   :config (global-evil-search-highlight-persist t))
@@ -24,6 +33,24 @@
   (eval-after-load "auto-complete"
     '(add-to-list 'ac-modes 'haskell-interactive-mode)))
 (use-package all-the-icons)
+(use-package magit :bind (("M-g" . magit-status))
+  :config
+  (setq magit-display-buffer-function
+	(lambda (buffer)
+	  (display-buffer buffer '(display-buffer-same-window)))))
+(use-package intero
+  :config (add-hook 'haskell-mode-hook 'intero-mode)
+  (add-hook 'haskell-mode-hook
+	    (lambda () (interactive)
+	      (define-key evil-motion-state-map "gd" 'intero-goto-definition)))
+  :bind (("M-h" . nil)
+	 ("M-h d" . intero-goto-definition)
+	 ("M-h i" . intero-info)
+	 ("M-h t" . intero-type-at)
+	 ("M-h l" . intero-repl-load)
+	 ("M-h s" . intero-apply-suggestions)
+	 ("M-h c" . intero-repl-clear-buffer)
+	 ("M-h r" . intero-repl)))
 
 ; === VISUALS ===
 ; Load theme.
@@ -70,7 +97,12 @@
 (global-set-key "\M-u" 'undo-tree-visualize)
 (global-set-key "\M-q" 'kill-this-buffer)
 (global-set-key "\M-Q" 'delete-window)
-(global-set-key "\M-a" 'buffer-menu)
+(global-set-key "\M-b" 'buffer-menu)
+; Evaluation.
+(global-set-key "\M-e" nil)
+(global-set-key (kbd "M-e b") 'eval-buffer)
+(global-set-key (kbd "M-e e") 'eval-expression)
+(global-set-key (kbd "M-e s") 'eval-last-sexp)
 ; Switch between header and source.
 (global-set-key (kbd "<f11>") 'ff-find-other-file)
 ; Ctrl-/ to clear search results.
@@ -100,9 +132,27 @@
   (while (and (string-prefix-p "*" (buffer-name))
 	      (not (string= "*scratch*" (buffer-name))))
       (previous-buffer)))
-(global-set-key [M-tab] 'my-next-buffer)
-(global-set-key (kbd "<M-S-iso-lefttab>") 'my-previous-buffer)
-(global-set-key (kbd "<backtab>") 'my-previous-buffer)
+(global-set-key [M-tab] 'my-previous-buffer)
+(global-set-key (kbd "<M-S-iso-lefttab>") 'my-next-buffer)
+(global-set-key (kbd "<backtab>") 'my-next-buffer)
+; Setup ESC to quit most things.
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+(global-set-key [escape] 'evil-exit-emacs-state)
 
 ; === MISC ===
 ; Set middle-click to paste at cursor position instead of mouse position.
@@ -126,14 +176,6 @@
 ; Don't auto-insert a final newline.
 (setq require-final-newline nil)
 ; Set some custom stuff.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (evil-search-highlight-persist all-the-icons use-package ac-haskell-process haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
