@@ -62,6 +62,8 @@
 (setq initial-scratch-message "; *scratch*\n")
 ; Turn on line numbers.
 (global-linum-mode 1)
+; TODO: Make the number dynamic based on the number of lines.
+(if (not window-system) (setq linum-format "%5d "))
 ; Set line number color.
 (set-face-foreground 'linum "#bf8900")
 ; Set font.
@@ -82,7 +84,7 @@
 ; Change mode-line color by evil state.
 (add-hook 'post-command-hook
 	  (lambda ()
-	    (let ((color (cond ((evil-insert-state-p) '("#f45942" . "#ffffff"))
+	    (let ((color (cond ((evil-insert-state-p) '("#930000" . "#ffffff"))
 			       (t '("#024e8c" . "#ffffff")))))
 	      (set-face-background 'mode-line (car color))
 	      (set-face-foreground 'mode-line (cdr color)))))
@@ -109,6 +111,7 @@
 (global-set-key (kbd "<f11>") 'ff-find-other-file)
 ; Ctrl-/ to clear search results.
 (define-key evil-normal-state-map (kbd "C-/") 'evil-search-highlight-persist-remove-all)
+(define-key evil-normal-state-map (kbd "C-_") 'evil-search-highlight-persist-remove-all)
 ; Enable Ctrl-W inside the minibuffer.
 (define-key minibuffer-local-map "\C-w" 'backward-kill-word)
 ; Enable Ctrl-U to delete to beginning of line.
@@ -137,6 +140,10 @@
 (global-set-key [M-tab] 'my-previous-buffer)
 (global-set-key (kbd "<M-S-iso-lefttab>") 'my-next-buffer)
 (global-set-key (kbd "<backtab>") 'my-next-buffer)
+(define-key evil-motion-state-map [tab] 'nil)
+(define-key evil-motion-state-map [S-tab] 'nil)
+(define-key evil-normal-state-map [tab] 'my-previous-buffer)
+(define-key evil-normal-state-map [S-tab] 'my-next-buffer)
 ; Setup ESC to quit most things.
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
@@ -162,7 +169,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       (company-complete)
     (indent-according-to-mode)))
 (define-key evil-insert-state-map [tab] 'complete-or-indent)
-(define-key evil-normal-state-map [tab] 'indent-according-to-mode)
 ; Haskell bindings.
 (define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --fast")))
 (define-key haskell-mode-map [f12] 'intero-devel-reload)
@@ -174,6 +180,27 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key haskell-mode-map (kbd "M-h s") 'intero-apply-suggestions)
 (define-key haskell-mode-map (kbd "M-h c") 'intero-repl-clear-buffer)
 (define-key haskell-mode-map (kbd "M-h r") 'intero-repl)
+; Increment/decrement numbers.
+(defun increment-number-decimal (&optional arg)
+  "Increment the number forward from point by 'arg'."
+  (interactive "p*")
+  (save-excursion
+    (save-match-data
+      (let (inc-by field-width answer)
+	(setq inc-by (if arg arg 1))
+	(skip-chars-backward "0123456789")
+	(when (re-search-forward "[0-9]+" nil t)
+	  (setq field-width (- (match-end 0) (match-beginning 0)))
+	  (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+	  (when (< answer 0)
+	    (setq answer (+ (expt 10 field-width) answer)))
+	  (replace-match (format (concat "%0" (int-to-string field-width) "d")
+				 answer)))))))
+(defun decrement-number-decimal (&optional arg)
+  (interactive "p*")
+  (increment-number-decimal (if arg (- arg) -1)))
+(define-key evil-normal-state-map (kbd "C-a") 'increment-number-decimal)
+(define-key evil-normal-state-map (kbd "C-x") 'decrement-number-decimal)
 
 ; === MISC ===
 ; Set middle-click to paste at cursor position instead of mouse position.
@@ -205,6 +232,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
  '(company-tooltip-common ((t (:inherit font-lock-comment-face))))
  '(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
  '(dired-directory ((t (:inherit font-lock-comment-face)))))
+; Smooth scrolling.
+(setq scroll-step 1)
+(setq scroll-conservatively 10000)
+(setq auto-window-vscroll nil)
 ; Only syntax check on save for Flycheck.
 (setq flycheck-check-syntax-automatically '(save))
 ; Tweak auto-mode alist.
@@ -215,5 +246,5 @@ The return value is the new value of LIST-VAR."
 (append-to-list 'auto-mode-alist
 		'(("\\.bash_aliases" . sh-mode)))
 ; Start the server.
-(server-start)
+;(server-start)
 (message "Finished loading init.el")
