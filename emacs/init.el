@@ -12,7 +12,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+    (misc protobuf-mode cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil :config (evil-mode 1))
@@ -45,6 +45,7 @@
   (add-hook 'haskell-mode-hook
 	    (lambda () (interactive)
 	      (define-key evil-motion-state-map "gd" 'intero-goto-definition))))
+(require 'misc)
 
 ; === VISUALS ===
 ; Load theme.
@@ -109,6 +110,8 @@
 (global-set-key (kbd "M-e s") 'eval-last-sexp)
 ; Switch between header and source.
 (global-set-key (kbd "<f11>") 'ff-find-other-file)
+; Proper forward word behavior with C-Left and C-Right.
+(global-set-key [C-right] 'forward-to-word)
 ; Ctrl-/ to clear search results.
 (define-key evil-normal-state-map (kbd "C-/") 'evil-search-highlight-persist-remove-all)
 (define-key evil-normal-state-map (kbd "C-_") 'evil-search-highlight-persist-remove-all)
@@ -203,6 +206,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key evil-normal-state-map (kbd "C-x") 'decrement-number-decimal)
 
 ; === MISC ===
+; Treat underscore as part of a word.
+(modify-syntax-entry ?_ "w")
 ; Set middle-click to paste at cursor position instead of mouse position.
 (setq mouse-yank-at-point t)
 ; Turn off line wrapping by default.
@@ -245,6 +250,15 @@ The return value is the new value of LIST-VAR."
   (set list-var (append (symbol-value list-var) elements)))
 (append-to-list 'auto-mode-alist
 		'(("\\.bash_aliases" . sh-mode)))
+; C++-mode style.
+(c-add-style "my-style"
+	     '("stroustrup"
+	       (indent-tabs-mode . nil) ; use spaces rather than tabs
+	       (c-basic-offset . 4))) ; indent by four spaces
+(defun my-c++-mode-hook ()
+  (c-set-style "my-style") ; use my-style defined above
+  (auto-fill-mode))
+(add-hook 'c++-mode-hook 'my-c++-mode-hook)
 ; Start the server.
 ;(server-start)
 (message "Finished loading init.el")
