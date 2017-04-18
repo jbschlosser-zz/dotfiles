@@ -267,7 +267,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
  '(company-tooltip ((t (:inherit default :background "#292929"))))
  '(company-tooltip-common ((t (:inherit font-lock-comment-face))))
  '(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
- '(dired-directory ((t (:inherit font-lock-comment-face)))))
+ '(dired-directory ((t (:inherit font-lock-comment-face))))
+ '(evil-search-highlight-persist-highlight-face ((t (:background "dark khaki" :foreground "dark slate gray")))))
 ; Smooth scrolling.
 (setq scroll-step 1)
 (setq scroll-conservatively 10000)
