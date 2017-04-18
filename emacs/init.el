@@ -12,7 +12,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (misc protobuf-mode cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+    (eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil :config (evil-mode 1))
@@ -45,6 +45,11 @@
   (add-hook 'haskell-mode-hook
 	    (lambda () (interactive)
 	      (define-key evil-motion-state-map "gd" 'intero-goto-definition))))
+(use-package eyebrowse
+  :config
+  (eyebrowse-mode t)
+  (setq eyebrowse-wrap-around t)
+  (add-hook 'find-file-hook 'eyebrowse-create-window-config))
 (require 'misc)
 
 ; === VISUALS ===
@@ -91,23 +96,67 @@
 	      (set-face-foreground 'mode-line (cdr color)))))
 
 ; === BINDINGS ===
-; Window movement.
+; Evaluation.
+(global-set-key (kbd "M-e") nil)
+(global-set-key (kbd "M-e M-b") 'eval-buffer)
+(global-set-key (kbd "M-e M-e") 'eval-expression)
+(global-set-key (kbd "M-e M-s") 'eval-last-sexp)
+; Window management.
 (global-set-key [M-left] 'windmove-left)
 (global-set-key [M-right] 'windmove-right)
 (global-set-key [M-up] 'windmove-up)
 (global-set-key [M-down] 'windmove-down)
+(global-set-key (kbd "M-q") 'eyebrowse-close-window-config)
+(global-set-key (kbd "M-Q") 'delete-window)
+(global-set-key (kbd "M-0") 'eyebrowse-switch-to-window-config-0)
+(global-set-key (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
+(global-set-key (kbd "M-2") 'eyebrowse-switch-to-window-config-2)
+(global-set-key (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
+(global-set-key (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
+(global-set-key (kbd "M-5") 'eyebrowse-switch-to-window-config-5)
+(global-set-key (kbd "M-6") 'eyebrowse-switch-to-window-config-6)
+(global-set-key (kbd "M-7") 'eyebrowse-switch-to-window-config-7)
+(global-set-key (kbd "M-8") 'eyebrowse-switch-to-window-config-8)
+(global-set-key (kbd "M-9") 'eyebrowse-switch-to-window-config-9)
+(global-set-key (kbd "M-w") nil)
+(global-set-key (kbd "M-w M-r") 'eyebrowse-rename-window-config)
+(global-set-key (kbd "M-w M-c") 'eyebrowse-create-window-config)
+(global-set-key (kbd "M-w M-a") 'split-window-horizontally)
+(global-set-key (kbd "M-w M-s") 'split-window-vertically)
+(global-set-key (kbd "M-w M-q") 'delete-window)
+(global-set-key (kbd "<tab>") nil)
+(global-set-key [M-tab] 'eyebrowse-next-window-config)
+(global-set-key (kbd "<S-tab>") 'eyebrowse-prev-window-config)
+(global-set-key (kbd "<M-S-iso-lefttab>") 'eyebrowse-prev-window-config)
+(global-set-key (kbd "<backtab>") 'eyebrowse-prev-window-config)
+(define-key evil-motion-state-map (kbd "<tab>") nil)
+(define-key evil-motion-state-map (kbd "<S-tab>") nil)
+(define-key evil-normal-state-map [tab] 'eyebrowse-next-window-config)
+(define-key evil-normal-state-map [S-tab] 'eyebrowse-prev-window-config)
+; Buffer management.
+(defun my-next-buffer ()
+  "next-buffer, skip *name* buffers except *scratch*"
+  (interactive)
+  (next-buffer)
+  (while (and (string-prefix-p "*" (buffer-name))
+	      (not (string= "*scratch*" (buffer-name))))
+      (next-buffer)))
+(defun my-previous-buffer ()
+  "previous-buffer, skip *name* buffers except *scratch*"
+  (interactive)
+  (previous-buffer)
+  (while (and (string-prefix-p "*" (buffer-name))
+	      (not (string= "*scratch*" (buffer-name))))
+      (previous-buffer)))
+(global-set-key (kbd "M-b") nil)
+(global-set-key (kbd "M-b M-q") 'kill-this-buffer)
+(global-set-key (kbd "M-b M-p") 'my-previous-buffer)
+(global-set-key (kbd "M-b M-n") 'my-next-buffer)
+(global-set-key (kbd "M-b M-b") 'buffer-menu)
 ; Convenient bindings for common operations.
 (global-set-key "\M-f" 'ido-find-file)
 (global-set-key "\M-u" 'undo-tree-visualize)
-(global-set-key "\M-q" 'kill-this-buffer)
-(global-set-key "\M-Q" 'delete-window)
-(global-set-key "\M-b" 'buffer-menu)
 (global-set-key "\M-d" 'ido-dired)
-; Evaluation.
-(global-set-key "\M-e" nil)
-(global-set-key (kbd "M-e b") 'eval-buffer)
-(global-set-key (kbd "M-e e") 'eval-expression)
-(global-set-key (kbd "M-e s") 'eval-last-sexp)
 ; Switch between header and source.
 (global-set-key (kbd "<f11>") 'ff-find-other-file)
 ; Proper forward word behavior with C-Left and C-Right.
@@ -125,28 +174,6 @@
 (global-set-key "\C-u" 'backward-kill-line)
 ; Spacebar scrolls cursor line to the center of the window.
 (define-key evil-normal-state-map (kbd "SPC") 'evil-scroll-line-to-center)
-; Buffer switching with M-Tab and M-S-Tab.
-(defun my-next-buffer ()
-  "next-buffer, skip *name* buffers except *scratch*"
-  (interactive)
-  (next-buffer)
-  (while (and (string-prefix-p "*" (buffer-name))
-	      (not (string= "*scratch*" (buffer-name))))
-      (next-buffer)))
-(defun my-previous-buffer ()
-  "previous-buffer, skip *name* buffers except *scratch*"
-  (interactive)
-  (previous-buffer)
-  (while (and (string-prefix-p "*" (buffer-name))
-	      (not (string= "*scratch*" (buffer-name))))
-      (previous-buffer)))
-(global-set-key [M-tab] 'my-previous-buffer)
-(global-set-key (kbd "<M-S-iso-lefttab>") 'my-next-buffer)
-(global-set-key (kbd "<backtab>") 'my-next-buffer)
-(define-key evil-motion-state-map [tab] 'nil)
-(define-key evil-motion-state-map [S-tab] 'nil)
-(define-key evil-normal-state-map [tab] 'my-previous-buffer)
-(define-key evil-normal-state-map [S-tab] 'my-next-buffer)
 ; Setup ESC to quit most things.
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
@@ -176,13 +203,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --fast")))
 (define-key haskell-mode-map [f12] 'intero-devel-reload)
 (define-key haskell-mode-map (kbd "M-h") nil)
-(define-key haskell-mode-map (kbd "M-h i") 'intero-info)
-(define-key haskell-mode-map (kbd "M-h t") 'intero-type-at)
-(define-key haskell-mode-map (kbd "M-h y") 'intero-type-insert)
-(define-key haskell-mode-map (kbd "M-h l") 'intero-repl-load)
-(define-key haskell-mode-map (kbd "M-h s") 'intero-apply-suggestions)
-(define-key haskell-mode-map (kbd "M-h c") 'intero-repl-clear-buffer)
-(define-key haskell-mode-map (kbd "M-h r") 'intero-repl)
+(define-key haskell-mode-map (kbd "M-h M-i") 'intero-info)
+(define-key haskell-mode-map (kbd "M-h M-t") 'intero-type-at)
+(define-key haskell-mode-map (kbd "M-h M-y") 'intero-type-insert)
+(define-key haskell-mode-map (kbd "M-h M-l") 'intero-repl-load)
+(define-key haskell-mode-map (kbd "M-h M-s") 'intero-apply-suggestions)
+(define-key haskell-mode-map (kbd "M-h M-c") 'intero-repl-clear-buffer)
+(define-key haskell-mode-map (kbd "M-h M-r") 'intero-repl)
 ; Increment/decrement numbers.
 (defun increment-number-decimal (&optional arg)
   "Increment the number forward from point by 'arg'."
@@ -206,8 +233,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key evil-normal-state-map (kbd "C-x") 'decrement-number-decimal)
 
 ; === MISC ===
-; Treat underscore as part of a word.
-(modify-syntax-entry ?_ "w")
+; Treat underscore as part of a word for C++ and python.
+(defun treat-underscore-as-part-of-word ()
+  (modify-syntax-entry ?_ "w" (syntax-table)))
+(add-hook 'c-mode-hook 'treat-underscore-as-part-of-word)
+(add-hook 'c++-mode-hook 'treat-underscore-as-part-of-word)
+(add-hook 'python-mode-hook 'treat-underscore-as-part-of-word)
 ; Set middle-click to paste at cursor position instead of mouse position.
 (setq mouse-yank-at-point t)
 ; Turn off line wrapping by default.
