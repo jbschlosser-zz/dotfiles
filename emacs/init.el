@@ -15,7 +15,10 @@
     (eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
-(use-package evil :config (evil-mode 1))
+(use-package evil
+  :config
+  (evil-mode 1)
+  (setq evil-want-fine-undo t))
 (use-package evil-terminal-cursor-changer :if (not window-system)
   :config (evil-terminal-cursor-changer-activate))
 (use-package evil-search-highlight-persist
