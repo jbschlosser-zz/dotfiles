@@ -12,17 +12,14 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit evil-search-highlight-persist all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord evil-terminal-cursor-changer company))))
+    (eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil
   :config
   (evil-mode 1)
-  (setq evil-want-fine-undo t))
-(use-package evil-terminal-cursor-changer :if (not window-system)
-  :config (evil-terminal-cursor-changer-activate))
-(use-package evil-search-highlight-persist
-  :config (global-evil-search-highlight-persist t))
+  (setq evil-want-fine-undo t)
+  (evil-select-search-module 'evil-search-module 'evil-search))
 (use-package ido
   :init (setq ido-enable-flex-matching t) (setq ido-everywhere t)
   :config (ido-mode 1))
@@ -30,11 +27,11 @@
 (use-package key-chord :config (key-chord-mode 1))
 (use-package company :config (add-hook 'after-init-hook 'global-company-mode))
 (use-package all-the-icons)
-(use-package magit :bind (("M-g" . magit-status))
-  :config
-  (setq magit-display-buffer-function
-	(lambda (buffer)
-	  (display-buffer buffer '(display-buffer-same-window)))))
+;; (use-package magit :bind (("M-g" . magit-status))
+;;   :config
+;;   (setq magit-display-buffer-function
+;; 	(lambda (buffer)
+;; 	  (display-buffer buffer '(display-buffer-same-window)))))
 (use-package haskell-mode
   :config
   (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
@@ -51,8 +48,7 @@
 (use-package eyebrowse
   :config
   (eyebrowse-mode t)
-  (setq eyebrowse-wrap-around t)
-  (add-hook 'find-file-hook 'eyebrowse-create-window-config))
+  (setq eyebrowse-wrap-around t))
 (require 'misc)
 
 ; === VISUALS ===
@@ -76,7 +72,7 @@
 ; Set line number color.
 (set-face-foreground 'linum "#bf8900")
 ; Set font.
-(setq my-default-font "Terminus 12")
+(setq my-default-font "Terminus 11")
 (set-face-attribute 'default t :font my-default-font)
 (set-face-attribute 'default nil :font my-default-font)
 (set-frame-font my-default-font nil t)
@@ -97,8 +93,30 @@
 			       (t '("#024e8c" . "#ffffff")))))
 	      (set-face-background 'mode-line (car color))
 	      (set-face-foreground 'mode-line (cdr color)))))
+; Set custom font faces.
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-scrollbar-bg ((t (:background "#292929"))))
+ '(company-scrollbar-fg ((t (:background "#1c1c1c"))))
+ '(company-tooltip ((t (:inherit default :background "#292929"))))
+ '(company-tooltip-common ((t (:inherit font-lock-comment-face))))
+ '(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
+ '(dired-directory ((t (:inherit font-lock-comment-face))))
+ '(evil-ex-lazy-highlight ((t (:inherit lazy-highlight :foreground "#222222"))))
+ '(font-lock-doc-face ((t (:inherit font-lock-comment-face)))))
 
 ; === BINDINGS ===
+; Start server.
+(global-set-key (kbd "M-s") nil)
+(global-set-key (kbd "M-s M-s") 'server-start)
+; Describing.
+(global-set-key (kbd "M-d") nil)
+(global-set-key (kbd "M-d M-f") 'describe-face)
+(global-set-key (kbd "M-d M-k") 'describe-key)
+(global-set-key (kbd "M-d M-v") 'describe-variable)
 ; Evaluation.
 (global-set-key (kbd "M-e") nil)
 (global-set-key (kbd "M-e M-b") 'eval-buffer)
@@ -156,17 +174,20 @@
 (global-set-key (kbd "M-b M-p") 'my-previous-buffer)
 (global-set-key (kbd "M-b M-n") 'my-next-buffer)
 (global-set-key (kbd "M-b M-b") 'buffer-menu)
+(global-set-key (kbd "M-b M-s") 'switch-to-buffer)
+(global-set-key (kbd "M-b M-r") 'revert-buffer)
+(global-set-key (kbd "M-b M-e") 'eval-buffer)
 ; Convenient bindings for common operations.
 (global-set-key "\M-f" 'ido-find-file)
 (global-set-key "\M-u" 'undo-tree-visualize)
-(global-set-key "\M-d" 'ido-dired)
+(global-set-key "\M-D" 'ido-dired)
 ; Switch between header and source.
 (global-set-key (kbd "<f11>") 'ff-find-other-file)
 ; Proper forward word behavior with C-Left and C-Right.
 (global-set-key [C-right] 'forward-to-word)
 ; Ctrl-/ to clear search results.
-(define-key evil-normal-state-map (kbd "C-/") 'evil-search-highlight-persist-remove-all)
-(define-key evil-normal-state-map (kbd "C-_") 'evil-search-highlight-persist-remove-all)
+(define-key evil-normal-state-map (kbd "C-/") 'evil-ex-nohighlight)
+(define-key evil-normal-state-map (kbd "C-_") 'evil-ex-nohighlight)
 ; Enable Ctrl-W inside the minibuffer.
 (define-key minibuffer-local-map "\C-w" 'backward-kill-word)
 ; Enable Ctrl-U to delete to beginning of line.
@@ -203,7 +224,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (indent-according-to-mode)))
 (define-key evil-insert-state-map [tab] 'complete-or-indent)
 ; Haskell bindings.
-(define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --fast")))
+(define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --profile")))
 (define-key haskell-mode-map [f12] 'intero-devel-reload)
 (define-key haskell-mode-map (kbd "M-h") nil)
 (define-key haskell-mode-map (kbd "M-h M-i") 'intero-info)
@@ -234,8 +255,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (increment-number-decimal (if arg (- arg) -1)))
 (define-key evil-normal-state-map (kbd "C-a") 'increment-number-decimal)
 (define-key evil-normal-state-map (kbd "C-x") 'decrement-number-decimal)
+; Find/replace from visual mode.
+(defun get-text-selection (beg end)
+  (interactive "r")
+  (buffer-substring-no-properties beg end))
+(defun find-replace-init ()
+  (interactive)
+  (evil-ex (concat "%s@" (call-interactively 'get-text-selection) "@@g")))
+(define-key evil-visual-state-map (kbd "C-r") 'find-replace-init)
 
 ; === MISC ===
+; Better searching.
+(setq evil-ex-search-case 'sensitive)
+; Disable tabs.
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 ; Treat underscore as part of a word for C++ and python.
 (defun treat-underscore-as-part-of-word ()
   (modify-syntax-entry ?_ "w" (syntax-table)))
@@ -259,19 +293,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       `((".*" ,temporary-file-directory t)))
 ; Don't auto-insert a final newline.
 (setq require-final-newline nil)
-; Set some custom stuff.
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(company-scrollbar-bg ((t (:background "#292929"))))
- '(company-scrollbar-fg ((t (:background "#1c1c1c"))))
- '(company-tooltip ((t (:inherit default :background "#292929"))))
- '(company-tooltip-common ((t (:inherit font-lock-comment-face))))
- '(company-tooltip-selection ((t (:inherit font-lock-keyword-face))))
- '(dired-directory ((t (:inherit font-lock-comment-face))))
- '(evil-search-highlight-persist-highlight-face ((t (:background "dark khaki" :foreground "dark slate gray")))))
+; Auto-close the compilation window on success.
+(defun compilation-exit-autoclose (status code msg)
+  (when (and (eq status 'exit) (zerop code))
+    (bury-buffer)
+    (delete-window (get-buffer-window (get-buffer "*compilation*"))))
+  (cons msg code))
+(setq compilation-exit-message-function 'compilation-exit-autoclose)
 ; Smooth scrolling.
 (setq scroll-step 1)
 (setq scroll-conservatively 10000)
