@@ -12,7 +12,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord company))))
+    (lua-mode eyebrowse misc protobuf-mode cmake-mode helm intero evil-magit magit all-the-icons use-package haskell-mode neotree auto-complete undo-tree ido evil key-chord company))))
 (require 'use-package)
 (setq use-package-always-ensure t)
 (use-package evil
@@ -72,7 +72,7 @@
 ; Set line number color.
 (set-face-foreground 'linum "#bf8900")
 ; Set font.
-(setq my-default-font "Terminus 11")
+(setq my-default-font "Terminus 12")
 (set-face-attribute 'default t :font my-default-font)
 (set-face-attribute 'default nil :font my-default-font)
 (set-frame-font my-default-font nil t)
@@ -122,6 +122,12 @@
 (global-set-key (kbd "M-e M-b") 'eval-buffer)
 (global-set-key (kbd "M-e M-e") 'eval-expression)
 (global-set-key (kbd "M-e M-s") 'eval-last-sexp)
+; Bookmarks.
+(global-set-key (kbd "M-k") nil)
+(global-set-key (kbd "M-k M-l") 'list-bookmarks)
+(global-set-key (kbd "M-k M-k") 'bookmark-set)
+(global-set-key (kbd "M-k M-j") 'bookmark-jump)
+(global-set-key (kbd "M-k M-d") 'bookmark-delete)
 ; Window management.
 (global-set-key [M-left] 'windmove-left)
 (global-set-key [M-right] 'windmove-right)
@@ -224,7 +230,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (indent-according-to-mode)))
 (define-key evil-insert-state-map [tab] 'complete-or-indent)
 ; Haskell bindings.
-(define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --profile")))
+(define-key haskell-mode-map [f3] (lambda () (interactive) (compile "stack build --fast")))
 (define-key haskell-mode-map [f12] 'intero-devel-reload)
 (define-key haskell-mode-map (kbd "M-h") nil)
 (define-key haskell-mode-map (kbd "M-h M-i") 'intero-info)
@@ -270,6 +276,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ; Disable tabs.
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
+(setq nxml-child-indent 4 nxml-attribute-indent 4)
 ; Treat underscore as part of a word for C++ and python.
 (defun treat-underscore-as-part-of-word ()
   (modify-syntax-entry ?_ "w" (syntax-table)))
@@ -313,6 +320,8 @@ The return value is the new value of LIST-VAR."
   (set list-var (append (symbol-value list-var) elements)))
 (append-to-list 'auto-mode-alist
 		'(("\\.bash_aliases" . sh-mode)))
+(append-to-list 'auto-mode-alist
+		'(("\\.world" . xml-mode)))
 ; C++-mode style.
 (c-add-style "my-style"
 	     '("stroustrup"
