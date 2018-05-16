@@ -29,7 +29,7 @@ floating_modifier $mod
 focus_follows_mouse no
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec termite
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -76,12 +76,15 @@ bindsym $mod+s split v
 bindsym $mod+f fullscreen
 
 # Firefox
-bindsym $mod+shift+f exec firefox
+bindsym $mod+shift+f exec google-chrome
+
+# Emacs
+bindsym $mod+e exec emacs
 
 # change container layout (stacked, tabbed, toggle split)
-#bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+t layout tabbed
+bindsym $mod+y layout toggle split
+bindsym $mod+u layout stacking
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -90,10 +93,10 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-#bindsym $mod+a focus parent
+bindsym $mod+v focus parent
 
 # focus the child container
-#bindsym $mod+d focus child
+bindsym $mod+c focus child
 
 # switch to workspace
 bindsym $mod+1 workspace 1
@@ -125,6 +128,9 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+for_window [title="VIZDOOM"] floating enable
+for_window [title="Figure 1"] floating enable
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
