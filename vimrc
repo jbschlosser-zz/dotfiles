@@ -51,6 +51,7 @@ set statusline+=Column\ %c,\  " Cursor column.
 set statusline+=Line\ %l/%L " Cursor line.
 set statusline+=\ (%p%%) " Percent through the file.
 " --=== Colors ===--
+colorscheme default
 " Change fold bar color.
 highlight Folded ctermbg=darkgray ctermfg=green
 " Diff colors.
@@ -148,6 +149,12 @@ autocmd FileType haskell map <buffer> <F3> :!stack test<CR>
 " --=== MAKE ===--
 " Keep real tabs for Makefiles.
 autocmd FileType make setlocal noexpandtab
+
+autocmd BufNewFile,BufRead *.launch set filetype=xml
+
+" --=== LaTeX ===--
+autocmd FileType tex map <buffer> <F3> :!pdflatex <C-R>=expand("%:t")<CR><CR>
+autocmd FileType tex map <buffer> <F4> :!zathura <C-R>=expand("%:t:r")<CR>.pdf<CR>
 
 " --=== BINARY FILES ===--
 " Switch to hex mode for certain files.
