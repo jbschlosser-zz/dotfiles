@@ -3,7 +3,6 @@
 typeset -A key
 
 key[Home]=${terminfo[khome]}
-
 key[End]=${terminfo[kend]}
 key[Insert]=${terminfo[kich1]}
 key[Delete]=${terminfo[kdch1]}
@@ -51,7 +50,6 @@ RPROMPT=""
 # Colors.
 alias ls='ls --color'
 alias grep='grep --color'
-alias vi='nvim'
 eval `dircolors -b ~/.dircolors`
 
 # Bindings.
@@ -72,5 +70,15 @@ xmodmap -e "keycode 167 = Next"
 autoload -U compinit; compinit
 setopt nomenucomplete
 setopt noautomenu
+
+# Set window title dynamically.
+case $TERM in
+    xterm*)
+        precmd () {
+            print -Pn "\e]0;zsh:$(pwd)\a"
+            pwd > /tmp/__currentpwd__
+        }
+        ;;
+esac
 
 # Env variables.

@@ -15,7 +15,7 @@ set $mod Mod4
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
-font pango:DejaVu Sans Mono 8
+font Terminus 12
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -30,6 +30,8 @@ focus_follows_mouse no
 
 # start a terminal
 bindsym $mod+Return exec termite
+# start a terminal in the same directory
+bindsym $mod+Shift+Return exec termite -d $(cat /tmp/__currentpwd__)
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -76,7 +78,7 @@ bindsym $mod+s split v
 bindsym $mod+f fullscreen
 
 # Firefox
-bindsym $mod+shift+f exec google-chrome
+bindsym $mod+shift+f exec google-chrome-stable
 
 # Emacs
 bindsym $mod+e exec emacs
@@ -157,6 +159,20 @@ mode "resize" {
 }
 
 bindsym $mod+r mode "resize"
+
+# Fn button controls.
+#increase sound volume
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
+#decrease sound volume
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
+# mute sound
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
+
+# Screen brightness controls
+# increase screen brightness
+bindsym XF86MonBrightnessUp exec xbacklight -inc 10
+# decrease screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 10
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
