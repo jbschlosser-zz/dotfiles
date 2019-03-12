@@ -9,6 +9,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'tmhedberg/matchit'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'itchyny/vim-haskell-indent'
+Plug 'tpope/vim-commentary'
 call plug#end()
 
 " SETTINGS.
@@ -68,6 +69,8 @@ noremap <TAB> :tabn<CR>
 noremap <S-TAB> :tabp<CR>
 " Use ctrl-/ to clear search result buffer.
 noremap <silent> <C-_> :noh<CR>
+" Use alt-; for commenting.
+vmap ; gc
 " Remove the use of arrow keys!
 "noremap <Left>  <NOP>
 "noremap <Right> <NOP>
