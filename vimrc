@@ -10,6 +10,8 @@ Plug 'tmhedberg/matchit'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'itchyny/vim-haskell-indent'
 Plug 'tpope/vim-commentary'
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'mhinz/vim-grepper'
 call plug#end()
 
 " SETTINGS.
@@ -100,6 +102,18 @@ noremap <F2> za
 noremap <F5> zi
 " Use Control-Backspace for deleting the last word.
 imap <C-H> <C-W>
+" Use Alt-f to fuzzy open files.
+noremap f :CtrlP<CR>
+" Use Alt-b to switch between buffers.
+noremap b :CtrlPBuffer<CR>
+" Use Alt-arrows to move between windows.
+noremap [1;3D <C-w>h
+noremap [1;3B <C-w>j
+noremap [1;3A <C-w>k
+noremap [1;3C <C-w>l
+" Use Alt-g for grep.
+noremap g :Grepper<CR>
+xmap g <plug>(GrepperOperator)
 
 " PLUGIN SETTINGS.
 " --=== NERDtree ===--
@@ -116,6 +130,15 @@ set completeopt-=preview
 "let g:ycm_add_preview_to_completeopt=0
 let g:ycm_auto_trigger=0
 "let g:ycm_autoclose_preview_window_after_completion=1
+" --=== CtrlP ===--
+" Use directory of current file as working directory.
+let g:ctrlp_working_path_mode = 'c'
+" Set no limit for the number of files shown.
+let g:ctrlp_max_files=0
+" Set a large dir depth.
+let g:ctrlp_max_depth=40
+" Set some window settings.
+let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:50'
 
 " FILE-TYPE SPECIFIC SETTINGS.
 " --=== C ===--
