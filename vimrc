@@ -12,6 +12,7 @@ Plug 'itchyny/vim-haskell-indent'
 Plug 'tpope/vim-commentary'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mhinz/vim-grepper'
+Plug 'tpope/vim-fugitive'
 call plug#end()
 
 " SETTINGS.
@@ -49,6 +50,7 @@ set statusline+=%F " Relative filename.
 set statusline+=%y " File type.
 set statusline+=%m " Modified flag.
 set statusline+=%r " Read-only flag.
+set statusline+=%{FugitiveStatusline()} " Git branch.
 set statusline+=%= " Left/right separator.
 set statusline+=Column\ %c,\  " Cursor column.
 set statusline+=Line\ %l/%L " Cursor line.
