@@ -119,8 +119,8 @@ noremap [1;3C <C-w>l
 " Use Alt-g for grep.
 noremap g :Grepper<CR>
 xmap g <plug>(GrepperOperator)
-" Use Alt-s for git status.
-noremap s :Gstatus<CR>
+" Use Alt-d for git status.
+noremap d :Gstatus<CR>
 
 " PLUGIN SETTINGS.
 " --=== NERDtree ===--
