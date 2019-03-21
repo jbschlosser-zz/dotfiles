@@ -13,6 +13,7 @@ Plug 'tpope/vim-commentary'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'mhinz/vim-grepper'
 Plug 'tpope/vim-fugitive'
+Plug 'sheerun/vim-polyglot'
 call plug#end()
 
 " SETTINGS.
@@ -57,6 +58,8 @@ set statusline+=Line\ %l/%L " Cursor line.
 set statusline+=\ (%p%%) " Percent through the file.
 " --=== Colors ===--
 colorscheme default
+" Change string color.
+highlight String ctermfg=green
 " Change fold bar color.
 highlight Folded ctermbg=darkgray ctermfg=green
 " Diff colors.
@@ -116,6 +119,8 @@ noremap [1;3C <C-w>l
 " Use Alt-g for grep.
 noremap g :Grepper<CR>
 xmap g <plug>(GrepperOperator)
+" Use Alt-s for git status.
+noremap s :Gstatus<CR>
 
 " PLUGIN SETTINGS.
 " --=== NERDtree ===--
