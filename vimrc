@@ -138,8 +138,8 @@ set completeopt-=preview
 let g:ycm_auto_trigger=0
 "let g:ycm_autoclose_preview_window_after_completion=1
 " --=== CtrlP ===--
-" Use directory of current file as working directory.
-let g:ctrlp_working_path_mode = 'c'
+" Use nearest .git dir or directory of current file.
+let g:ctrlp_working_path_mode = 'ra'
 " Set no limit for the number of files shown.
 let g:ctrlp_max_files=0
 " Set a large dir depth.
