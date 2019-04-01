@@ -131,7 +131,7 @@ bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 # shutdown
-bindsym $mod+Shift+s exec "i3-nagbar -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown?' -b 'Yes, shutdown' 'sudo shutdown -h now'"
+bindsym $mod+Shift+s exec "i3-nagbar -t warning -m '=== SHUTDOWN MENU ===' -b 'Restart' 'sudo shutdown -r now' -b 'Shutdown' 'sudo shutdown -h now'"
 
 for_window [title="VIZDOOM"] floating enable
 for_window [title="Figure 1"] floating enable
