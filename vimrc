@@ -10,10 +10,11 @@ Plug 'tmhedberg/matchit'
 Plug 'derekwyatt/vim-fswitch'
 Plug 'itchyny/vim-haskell-indent'
 Plug 'tpope/vim-commentary'
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'mhinz/vim-grepper'
 Plug 'tpope/vim-fugitive'
 Plug 'sheerun/vim-polyglot'
+Plug 'osyo-manga/vim-over'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " SETTINGS.
@@ -67,6 +68,8 @@ highlight DiffAdd cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
 highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
 highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
 highlight DiffText cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+" Search foreground color.
+highlight Search ctermfg=black
 
 " KEY MAPPINGS.
 " Use Ctrl-R for replacing selected text.
@@ -107,20 +110,30 @@ noremap <F2> za
 noremap <F5> zi
 " Use Control-Backspace for deleting the last word.
 imap <C-H> <C-W>
-" Use Alt-f to fuzzy open files.
-noremap f :CtrlP<CR>
-" Use Alt-b to switch between buffers.
-noremap b :CtrlPBuffer<CR>
 " Use Alt-arrows to move between windows.
 noremap [1;3D <C-w>h
 noremap [1;3B <C-w>j
 noremap [1;3A <C-w>k
 noremap [1;3C <C-w>l
-" Use Alt-s for grep.
-noremap s :Grepper<CR>
-xmap s <plug>(GrepperOperator)
+" Use Alt-q to close the current window.
+noremap q :q<CR>
 " Use Alt-g for git status.
 noremap g :Gstatus<CR>
+" Use Alt-s for grep search.
+noremap s :Ag<CR>
+vnoremap s "hy:Ag <C-r>h<CR>
+" Use Alt-f to fuzzy open files tracked by git.
+noremap f :GFiles<CR>
+" Use Alt-F to fuzzy open files in general.
+noremap F :Files<CR>
+" Use Alt-b to switch between buffers.
+noremap b :Buffers<CR>
+" Use Alt-d to show git diffs.
+noremap d :GFiles?<CR>
+" Use Alt-l to search lines in current buffer.
+noremap l :BLines<CR>
+" Use Alt-L to search lines in all open buffers.
+noremap L :Lines<CR>
 
 " PLUGIN SETTINGS.
 " --=== NERDtree ===--
@@ -135,17 +148,10 @@ set completeopt-=preview
 " --=== YouCompleteMe ===--
 "set completeopt-=previewvimrc
 "let g:ycm_add_preview_to_completeopt=0
-let g:ycm_auto_trigger=0
+"let g:ycm_auto_trigger=0
 "let g:ycm_autoclose_preview_window_after_completion=1
-" --=== CtrlP ===--
-" Use nearest .git dir or directory of current file.
-let g:ctrlp_working_path_mode = 'ra'
-" Set no limit for the number of files shown.
-let g:ctrlp_max_files=0
-" Set a large dir depth.
-let g:ctrlp_max_depth=40
-" Set some window settings.
-let g:ctrlp_match_window = 'bottom,order:ttb,min:1,max:10,results:50'
+" --=== fzf ===--
+let g:fzf_layout = {'down': '~33%'}
 
 " FILE-TYPE SPECIFIC SETTINGS.
 " --=== C ===--
