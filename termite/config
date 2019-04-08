@@ -12,49 +12,39 @@ scrollback_lines = 50000
 search_wrap = true
 cursor_blink = off
 cursor_shape = block
-browser = google-chrome
+browser = google-chrome-stable
 fullscreen = false
 
 [colors]
-cursor = orange
-foreground = #dadada
-foreground_bold = #dadada
-background = rgba(33, 33, 33, 0.6)
-#background = rgba(, 0.9)
-highlight = #ffffff
-
-# Normal black
-color0 = #073642
-# Normal red
-color1 = #dc322f
-# Normal yellow
+background = #1b1c17
+cursor = #ce9c5c
+foreground = #fffacd
+foreground_bold = #fffacd
+highlight = #FFFACD
+# black
+color0 = #272822
+color8 = #75715e
+# red
+color1 = #c64b4b
+color9 = #c64b4b
+# green
 color2 = #859900
-# Normal green
-color3 = #b58900
-# Normal blue
-color4 = #268bd2
-# Normal magenta
-color5 = #d33682
-# Normal cyan
-color6 = #2aa198
-# Normal white
-color7 = #eee8d5
-# Bright black
-color8 = #073642
-# Bright red
-color9 = #dc322f
-# Bright yellow
 color10 = #859900
-# Bright green
-color11 = #b58900
-# Bright blue
-color12 = #268bd2
-# Bright magenta
-color13 = #d33682
-# Bright cyan
-color14 = #2aa198
-# Bright white
-color15 = #eee8d5
+# yellow
+color3 = #f4bf75
+color11 = #f4bf75
+# blue
+color4 = #1784bb
+color12 = #1784bb
+# magenta
+color5 = #948ca3
+color13 = #948ca3
+# cyan
+color6 = #a1efe4
+color14 = #a1efe4
+# white
+color7 = #f8f8f2
+color15 = #f9f8f5
 
 [hints]
 #font = Monospace 12
