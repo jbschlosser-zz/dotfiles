@@ -70,6 +70,8 @@ highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Re
 highlight DiffText cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
 " Search foreground color.
 highlight Search ctermfg=black
+" Change visual mode color.
+highlight Visual ctermfg=black
 
 " KEY MAPPINGS.
 " Use Ctrl-R for replacing selected text.
