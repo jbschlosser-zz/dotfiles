@@ -29,16 +29,17 @@ floating_modifier $mod
 focus_follows_mouse no
 
 # start a terminal
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec termite
 # start a terminal in the same directory
-bindsym $mod+Shift+Return exec kitty -d $(cat /tmp/__currentpwd__)
+bindsym $mod+Shift+Return exec termite -d $(cat /tmp/__currentpwd__)
 
 # kill focused window
 bindsym $mod+Shift+q kill
 bindsym $mod+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+p exec dmenu_run
+#bindsym $mod+p exec dmenu_run
+bindsym $mod+p exec --no-startup-id "rofi -theme solarized -show drun -font \\"DejaVu 9\\" -run-shell-command '{terminal} -e \\" {cmd}; read -n 1 -s\\"'"
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
@@ -100,6 +101,10 @@ bindsym $mod+v focus parent
 # focus the child container
 bindsym $mod+c focus child
 
+# switch between workspaces
+bindsym $mod+Ctrl+Left workspace prev
+bindsym $mod+Ctrl+Right workspace next
+
 # switch to workspace
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
@@ -135,6 +140,7 @@ bindsym $mod+Shift+s exec "i3-nagbar -t warning -m '=== SHUTDOWN MENU ===' -b 'R
 
 for_window [title="VIZDOOM"] floating enable
 for_window [title="Figure 1"] floating enable
+for_window [title="main.py"] floating enable
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
